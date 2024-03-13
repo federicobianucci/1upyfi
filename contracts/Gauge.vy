@@ -129,7 +129,7 @@ def transfer(_to: address, _value: uint256) -> bool:
     assert _to != empty(address) and _to != self
 
     if _value > 0:
-        rewards.report(asset, msg.sender, _to, _value, 0)
+        rewards.report(asset, msg.sender, _to, _value, 0) # @audit call to rewards contract
 
     log Transfer(msg.sender, _to, _value)
     return True
@@ -149,7 +149,7 @@ def transferFrom(_from: address, _to: address, _value: uint256) -> bool:
         allowance: uint256 = self.allowance[_from][msg.sender] - _value
         self.allowance[_from][msg.sender] = allowance
 
-        rewards.report(asset, _from, _to, _value, 0)
+        rewards.report(asset, _from, _to, _value, 0) # @audit call to rewards contract
 
     log Transfer(_from, _to, _value)
     return True
@@ -332,7 +332,7 @@ def _deposit(_assets: uint256, _receiver: address):
     """
     assert _assets > 0
     pending: uint256 = self._pending()
-    rewards.report(asset, empty(address), _receiver, _assets, pending)
+    rewards.report(asset, empty(address), _receiver, _assets, pending) # @audit call to rewards contract
     assert ERC20(asset).transferFrom(msg.sender, proxy, _assets, default_return_value=True)
     log Deposit(msg.sender, _receiver, _assets, _assets)
     log Transfer(empty(address), _receiver, _assets)
@@ -349,7 +349,7 @@ def _withdraw(_assets: uint256, _receiver: address, _owner: address):
         allowance: uint256 = self.allowance[_owner][msg.sender] - _assets
         self.allowance[_owner][msg.sender] = allowance
     pending: uint256 = self._pending()
-    rewards.report(asset, _owner, empty(address), _assets, pending)
+    rewards.report(asset, _owner, empty(address), _assets, pending) # @audit call to rewards contract
     assert ERC20(asset).transferFrom(proxy, _receiver, _assets, default_return_value=True)
     log Withdraw(msg.sender, _receiver, _owner, _assets, _assets)
     log Transfer(_owner, empty(address), _assets)

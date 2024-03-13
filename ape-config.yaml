@@ -7,3 +7,14 @@ ethereum:
   default_network: mainnet-fork
   mainnet_fork:
     default_provider: foundry
+geth:
+  ethereum:
+    mainnet:
+      uri: https://eth-mainnet.g.alchemy.com/v2/GyfFTjIZGde9-H124t91696WWpNihI5O
+test:
+  coverage:
+    reports:
+      terminal:
+        verbose: true
+      html:
+        verbose: true

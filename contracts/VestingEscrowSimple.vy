@@ -59,7 +59,7 @@ def initialize(
     amount: uint256,
     start_time: uint256,
     end_time: uint256,
-    cliff_length: uint256,
+      cliff_length: uint256,
     open_claim: bool,
 ) -> bool:
     """

@@ -23,7 +23,7 @@ interface Rewards:
     def gauge_balance(_gauge: address, _account: address) -> uint256: view
 implements: Rewards
 
-interface Gauge:
+interface Gauge: # @audit this is yearn gauge interface
     def harvest() -> uint256: nonpayable
 
 interface Registry:

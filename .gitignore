@@ -11,3 +11,4 @@ coverage.json
 .vscode/*
 out
 cache
+venv/

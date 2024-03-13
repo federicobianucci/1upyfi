@@ -95,7 +95,7 @@ def extend_lock():
     """
     @notice Extend the duration of the protocol's ve lock
     """
-    proxy.modify_lock(0, block.timestamp + LOCK_TIME)
+    proxy.modify_lock(0, block.timestamp + LOCK_TIME) # @audit need to be operator
 
 @external
 def transfer(_to: address, _value: uint256) -> bool:
