@@ -9,3 +9,6 @@
 [submodule "lib/foundry-random"]
 	path = lib/foundry-random
 	url = https://github.com/joejordan/foundry-random
+[submodule "lib/snekmate"]
+	path = lib/snekmate
+	url = https://github.com/pcaversaccio/snekmate
