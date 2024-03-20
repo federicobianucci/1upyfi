@@ -1,0 +1,1 @@
+cast interface -n I$1 .build/$1.json > test/interfaces/I$1.sol
