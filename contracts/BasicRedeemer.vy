@@ -148,7 +148,7 @@ def redeem(_account: address, _receiver: address, _lt_amount: uint256, _dt_amoun
     return minted
 
 @internal
-def _redeem_yearn(_receiver: address, _amount: uint256, _eth_amount: uint256):
+def _redeem_yearn(_receiver: address, _amount: uint256, _eth_amount: uint256): # @audit-ok receiver?
     """
     @notice Redeem through Yearn. Keep slippage excess
     """
