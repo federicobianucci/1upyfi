@@ -155,7 +155,7 @@ def _redeem_yearn(_receiver: address, _amount: uint256, _eth_amount: uint256):
     value: uint256 = self.yearn_redemption.eth_required(_amount)
     value -= value * 3 / 1000
     assert value > 0
-    assert _eth_amount >= value, "slippage"
+    assert _eth_amount >= value, "slippage" # @audit check this slippage check
     self.yearn_redemption.redeem(_amount, value=value)
 
 @internal

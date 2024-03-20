@@ -35,7 +35,10 @@ contract VestingEscrowFactoryTest is BaseTest {
         bool _openClaim,
         address _owner
     ) public {
-        vm.assume(_recipient != address(0x0) && _recipient != address(this) && _recipient != address(token) && _recipient != owner);
+        vm.assume(
+            _recipient != address(0x0) && _recipient != address(this) && _recipient != address(token)
+                && _recipient != owner
+        );
         vm.assume(_amount > 0);
         vm.assume(_vestingDuration > 0);
         vm.assume(_cliffLength <= _vestingDuration);
@@ -47,17 +50,11 @@ contract VestingEscrowFactoryTest is BaseTest {
         vm.startPrank(_owner);
         token.approve(address(escrowFactory), _amount);
         address _vestingEscrow = escrowFactory.deploy_vesting_contract(
-            address(token),
-            _recipient,
-            _amount,
-            _vestingDuration,
-            _vestingStart,
-            _cliffLength,
-            _openClaim,
-            _owner
+            address(token), _recipient, _amount, _vestingDuration, _vestingStart, _cliffLength, _openClaim, _owner
         );
         vm.stopPrank();
 
+        console2.log("vesting contract deployed at: %s", _vestingEscrow);
         assertTrue(_vestingEscrow != address(0x0), "invalid vesting contract deployed");
     }
 }

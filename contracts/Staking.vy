@@ -5,7 +5,7 @@
 @license GNU AGPLv3
 @notice
     Vault with 1:1 of underlying liquid locker token.
-    Vote weight increases linearly over a period of 4 epochs.
+    Vote weight increases linearly over a period of 4 epochs. @audit 8 epochs
     Vote weights are snapshotted at the start of the week.
     Deposits can be locked to receive a larger vote weight up front.
     After unstaking the underlying tokens are streamed out over a week.
@@ -311,9 +311,9 @@ def lock(_duration: uint256 = max_value(uint256)) -> uint256:
     @dev Locks are capped at 4 epochs
     @dev Affects entire position, even assets staked after the lock was created
     """
-    old_duration: uint256 = self.unlock_times[msg.sender]
+    old_duration: uint256 = self.unlock_times[msg.sender] # old_unlock_time
     if old_duration > block.timestamp:
-        old_duration -= block.timestamp
+        old_duration -= block.timestamp # remaining_duration = old_unlock_time - timestamp
     else:
         old_duration = 0
 
@@ -327,14 +327,14 @@ def lock(_duration: uint256 = max_value(uint256)) -> uint256:
     if current_week > week:
         self.previous_packed_balances[msg.sender] = self.packed_balances[msg.sender]
 
-    new_duration: uint256 = min(_duration, RAMP_LENGTH)
+    new_duration: uint256 = min(_duration, RAMP_LENGTH) # min of duration and 8 weeks
     assert new_duration > old_duration or balance == 0
     
     # calculate new timestamp
     if balance > 0:
-        if time == 0:
+        if time == 0: # @audit when do this happen?
             time = block.timestamp
-        time -= new_duration - old_duration
+        time -= new_duration - old_duration # time - (new_duration - remaining_duration)
     else:
         time = 0
 
@@ -396,7 +396,7 @@ def vote_weight(_account: address) -> uint256:
         return 0
 
     time = block.timestamp / WEEK_LENGTH * WEEK_LENGTH - time
-    return balance * min(time, RAMP_LENGTH) / RAMP_LENGTH
+    return balance * min(time, RAMP_LENGTH) / RAMP_LENGTH 
 
 @external
 def set_rewards(_rewards: address):
@@ -458,7 +458,7 @@ def _withdrawable(_account: address) -> uint256:
     time, total, claimed = self._unpack(self.packed_streams[_account])
     if time == 0:
         return 0
-    time = min(block.timestamp - time, WEEK_LENGTH)
+    time = min(block.timestamp - time, WEEK_LENGTH) # @audit check this
     return total * time / WEEK_LENGTH - claimed
 
 @internal
@@ -494,9 +494,9 @@ def _update_balance(_amount: uint256, _account: address, _increment: bool):
     """
     @notice Update balance and time
     """
-    lock_duration: uint256 = self.unlock_times[_account]
+    lock_duration: uint256 = self.unlock_times[_account] 
     if lock_duration > block.timestamp:
-        lock_duration -= block.timestamp
+        lock_duration -= block.timestamp # remaining_lock_duration = unlock_time - timestamp
     else:
         lock_duration = 0
 
@@ -513,7 +513,7 @@ def _update_balance(_amount: uint256, _account: address, _increment: bool):
         if time > 0:
             time = min(block.timestamp - time, RAMP_LENGTH)
         # amount-weighted average time
-        time = block.timestamp - (balance * time + _amount * lock_duration) / (balance + _amount)
+        time = block.timestamp - (balance * time + _amount * lock_duration) / (balance + _amount) # @audit check this
         balance += _amount
     else:
         assert lock_duration == 0

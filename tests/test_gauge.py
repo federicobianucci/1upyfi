@@ -232,3 +232,4 @@ def test_approve(alice, bob, gauge):
     assert gauge.allowance(alice, bob) == 0
     gauge.approve(bob, UNIT, sender=alice)
     assert gauge.allowance(alice, bob) == UNIT
+
