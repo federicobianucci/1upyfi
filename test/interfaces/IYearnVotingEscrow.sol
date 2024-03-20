@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.4;
 
-interface IVotingEscrow {
+interface IYearnVotingEscrow {
     event Initialized(address token, address reward_pool);
     event ModifyLock(address indexed sender, address indexed user, uint256 amount, uint256 locktime, uint256 ts);
     event Penalty(address indexed user, uint256 amount, uint256 ts);
