@@ -5,7 +5,6 @@ import "forge-std/Test.sol";
 import {VyperDeployer} from "snekmate-utils/VyperDeployer.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {MockToken} from "test/mocks/MockToken.sol";
 
 import {IYearnVotingEscrow} from "test/interfaces/IYearnVotingEscrow.sol";
 import {IYearnGauge} from "test/interfaces/IYearnGauge.sol";
@@ -133,6 +132,24 @@ abstract contract BaseTest is Test {
 
         vm.label(address(yfi), "YFI");
         vm.label(address(dYfi), "dYFI");
+        vm.label(address(yearnVotingEscrow), "YearnVotingEscrow");
+        vm.label(address(yearnGauge1), "YearnGauge1");
+        vm.label(address(yearnGauge2), "YearnGauge2");
+        vm.label(address(yearnGauge3), "YearnGauge3");
+        vm.label(address(yearnGauge4), "YearnGauge4");
+        vm.label(address(yearnGauge5), "YearnGauge5");
+        vm.label(address(proxy), "Proxy");
+        vm.label(address(staking), "Staking");
+        vm.label(address(stakingRewards), "StakingRewards");
+        vm.label(address(basicRedeemer), "BasicRedeemer");
+        vm.label(address(gaugeRewards), "GaugeRewards");
+        vm.label(address(registry), "Registry");
+        vm.label(address(liquidLocker), "LiquidLocker");
+        vm.label(address(gauge1), "Gauge1");
+        vm.label(address(gauge2), "Gauge2");
+        vm.label(address(gauge3), "Gauge3");
+        vm.label(address(gauge4), "Gauge4");
+        vm.label(address(gauge5), "Gauge5");
         vm.label(address(0x10000), "Alice");
         vm.label(address(0x20000), "Bob");
         vm.label(address(0x30000), "Deployer");
