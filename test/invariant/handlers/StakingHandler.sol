@@ -6,23 +6,27 @@ import {StdCheats} from "forge-std/StdCheats.sol";
 import {StdUtils} from "forge-std/StdUtils.sol";
 import {console2 as console} from "forge-std/console2.sol";
 import {IStaking} from "test/interfaces/IStaking.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract StakingHandler is CommonBase, StdCheats, StdUtils {
     IStaking private staking;
+    IERC20 private yfi;
 
     uint256 public stakedAmount;
 
-    constructor(IStaking _staking) {
+    constructor(IStaking _staking, IERC20 _yfi) {
         staking = _staking;
+        yfi = _yfi;
     }
 
-    // function unclaimed() external view returns (uint256) {
-    //     return vestingEscrow.unclaimed();
-    // }
+    function totalSupply() external view returns (uint256) {
+        return staking.totalSupply();
+    }
 
-    // function total_claimed() external view returns (uint256) {
-    //     return vestingEscrow.total_claimed();
-    // }
+    function deposit(uint256 amount) external returns (uint256) {
+        bound(amount, 0, yfi.balanceOf(address(this)));
+        return staking.previewMint(amount);
+    }
 
     // function locked() external view returns (uint256) {
     //     return vestingEscrow.locked();

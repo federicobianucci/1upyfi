@@ -12,8 +12,6 @@ interface IBasicRedeemer {
     event SetTreasury(address treasury);
     event SetYearnRedemption(address yearn_redemption);
 
-    fallback() external payable;
-
     function accept_management() external;
     function claim_excess() external;
     function curve_pool() external view returns (address);

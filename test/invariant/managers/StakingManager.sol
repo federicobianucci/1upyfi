@@ -14,26 +14,8 @@ contract StakingManager is CommonBase, StdCheats, StdUtils {
         handlers = _handlers;
     }
 
-    // function skipSeconds(uint256 _seconds) external returns (uint256) {
-    //     _seconds = bound(_seconds, 1, maxSkipSeconds);
-    //     skip(_seconds);
-    //     return block.timestamp;
-    // }
-
-    // function skipDays(uint256 _days) external returns (uint256) {
-    //     _days = bound(_days, 1, type(uint16).max);
-    //     uint256 _seconds = bound(_days * 86_400, 1, maxSkipSeconds);
-    //     skip(_seconds);
-    //     return block.timestamp;
-    // }
-
-    // function claim(uint256 _handlerIndex) external returns (uint256) {
-    //     uint256 index = bound(_handlerIndex, 0, handlers.length - 1);
-    //     return handlers[index].claim();
-    // }
-
-    // function claim(uint256 _handlerIndex, address _sender) external returns (uint256) {
-    //     uint256 index = bound(_handlerIndex, 0, handlers.length - 1);
-    //     return handlers[index].claim(_sender);
-    // }
+    function deposit(uint256 handlerIndex, uint256 amount) public {
+        uint256 index = bound(handlerIndex, 0, handlers.length - 1);
+        handlers[index].deposit(amount);
+    }
 }

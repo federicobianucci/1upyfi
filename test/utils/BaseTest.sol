@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "forge-std/Test.sol";
 import {VyperDeployer} from "snekmate-utils/VyperDeployer.sol";
 
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {IYearnVotingEscrow} from "test/interfaces/IYearnVotingEscrow.sol";
@@ -50,10 +51,22 @@ abstract contract BaseTest is Test {
 
         //---------- yearn contracts ----------//
 
-        yfi = IERC20(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e);
-        dYfi = IERC20(0x41252E8691e964f7DE35156B68493bAb6797a275);
+        // yfi = IERC20(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e);
+        // dYfi = IERC20(0x41252E8691e964f7DE35156B68493bAb6797a275);
 
-        yearnVotingEscrow = IYearnVotingEscrow(0x90c1f9220d90d3966FbeE24045EDd73E1d588aD5);
+        // yearnVotingEscrow = IYearnVotingEscrow(0x90c1f9220d90d3966FbeE24045EDd73E1d588aD5);
+
+        // yearnGauge1 = IYearnGauge(0x7Fd8Af959B54A677a1D8F92265Bd0714274C56a3); // yG-yvCurve-YFIETH
+        // yearnGauge2 = IYearnGauge(0x28da6dE3e804bDdF0aD237CFA6048f2930D0b4Dc); // yG-yvCurve-dYFIETH-f-f
+        // yearnGauge3 = IYearnGauge(0x107717C98C8125A94D3d2Cc82b86a1b705f3A27C); // yG-lp-yCRVv2
+        // yearnGauge4 = IYearnGauge(0x81d93531720d86f0491DeE7D03f30b3b5aC24e59); // yG-yvCurve-yETH-f
+        // yearnGauge5 = IYearnGauge(0x6130E6cD924a40b24703407F246966D7435D4998); // yG-lp-yPRISMA
+
+        yfi = new ERC20("YFI", "YFI");
+        dYfi = new ERC20("dYFI", "dYFI");
+
+        yearnVotingEscrow =
+            IYearnVotingEscrow(deployContract("mocks/YearnVotingEscrow", abi.encode(address(yfi), address(dYfi))));
 
         yearnGauge1 = IYearnGauge(0x7Fd8Af959B54A677a1D8F92265Bd0714274C56a3); // yG-yvCurve-YFIETH
         yearnGauge2 = IYearnGauge(0x28da6dE3e804bDdF0aD237CFA6048f2930D0b4Dc); // yG-yvCurve-dYFIETH-f-f

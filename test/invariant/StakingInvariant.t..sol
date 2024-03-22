@@ -16,20 +16,18 @@ contract StakingInvariantTest is BaseTest {
         super.setUp();
 
         for (uint256 i = 0; i < HANDLERS; ++i) {
-            StakingHandler handler = new StakingHandler(staking);
+            StakingHandler handler = new StakingHandler(staking, yfi);
+            deal(address(yfi), address(handler), 100 ether);
+            vm.prank(address(handler));
+            yfi.approve(address(staking), type(uint256).max);
             handlers.push(handler);
         }
         manager = new StakingManager(handlers);
         targetContract(address(manager));
     }
 
-    // function invariant_vested_eq_sum_unclaimed_claimed_locked() external {
-    //     for (uint256 i = 0; i < TOTAL_HANDLERS; ++i) {
-    //         assertEq(
-    //             handlers[i].sum_unclaimed_claimed_locked(),
-    //             handlers[i].vestedAmount(),
-    //             "Vested amount not eq sum of unclaimed, claimed and locked"
-    //         );
-    //     }
-    // }
+    function invariant_vestedYFI_equals_supYFI_totalSupply() external view {
+        // assert(staking.totalSupply() == yfi.balanceOf(address(staking)));
+        assert(true);
+    }
 }

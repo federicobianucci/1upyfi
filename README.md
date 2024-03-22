@@ -14,10 +14,17 @@ The specification can be found here: [SPECIFICATION.md](./SPECIFICATION.md)
 # Install foundry
 curl -L https://foundry.paradigm.xyz | bash
 foundryup
+# Install foundry libs
+forge install
+# Create a python virtual environment
+python3 -m venv venv
+source venv/bin/activate
 # Install ape
-pip install eth-ape
+pip3 install eth-ape
 # Install required ape plugins
 ape plugins install .
+# Install vyper compiler
+pip3 install vyper==0.3.10
 ```
 
 In `ape-config.yaml` of either this directory or `~/.ape`, add the following lines, where `https://RPC_URL` is replaced with the URL of your preferred RPC
@@ -38,5 +45,10 @@ export ETHERSCAN_API_KEY=...
 #### Run tests
 
 ```sh
+source venv/bin/activate
+sorce .env
+# Ape
 ape test
+# Foundry
+forge test --fork-url $RPC --fork-block-number 19489690 -vvv
 ```
