@@ -23,7 +23,7 @@ interface Rewards:
     def gauge_balance(_gauge: address, _account: address) -> uint256: view
 implements: Rewards
 
-interface Gauge: # @audit this is yearn gauge interface
+interface Gauge: # @audit not used
     def harvest() -> uint256: nonpayable
 
 interface Registry:
@@ -156,7 +156,7 @@ def claim(_gauges: DynArray[address, 32], _receiver: address = msg.sender, _rede
         assert discount_token.transfer(_receiver, amount, default_return_value=True)
         return amount
 
-# @audit can be called by anyone. why? in exchange of a bounty = total_fees
+# @audit-ok can be called by anyone. why? in exchange of a bounty = total_fees
 @external
 def harvest(_gauges: DynArray[address, 32], _amounts: DynArray[uint256, 32], _receiver: address = msg.sender) -> uint256:
     """
@@ -207,8 +207,8 @@ def report(_ygauge: address, _from: address, _to: address, _amount: uint256, _re
     integral: uint256 = 0
     supply, integral = self._harvest(msg.sender, _rewards, 0)
 
-    if _from == empty(address) and _to == empty(address): # @audit check this case and the case that they are both set
-        assert _amount == 0 and _rewards > 0
+    if _from == empty(address) and _to == empty(address): # @audit-ok check this case and the case that they are both set
+        assert _amount == 0 and _rewards > 0, "Invalid report"
         self.packed_supply[msg.sender] = self._pack(supply, integral)
         return
     assert _from != _to and _to != self and _to != _ygauge and _amount > 0
@@ -337,8 +337,8 @@ def set_fee_rate(_idx: uint256, _fee: uint256):
     @param _fee Fee rate (bps)
     @dev Can only be called by management
     """
-    assert msg.sender == self.management
-    assert _idx < 4
+    assert msg.sender == self.management, "Not management"
+    assert _idx < 4, "Invalid fee index"
     assert _fee <= FEE_DENOMINATOR
     packed: uint256 = self.packed_fees
     sh: uint256 = 32 * (4 + _idx)
@@ -372,7 +372,7 @@ def accept_management():
     log SetManagement(msg.sender)
 
 @internal
-def _harvest(_gauge: address, _amount: uint256, _fees: uint256) -> (uint256, uint256): # @audit why amount? and not balanceOf?
+def _harvest(_gauge: address, _amount: uint256, _fees: uint256) -> (uint256, uint256):
     """
     @notice Harvest a gauge by transfering the reward tokens out of it and updating the integral
     """

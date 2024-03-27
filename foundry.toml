@@ -26,5 +26,6 @@ base_mainnet = "${BASE_MAINNET_RPC_URL}"
 zksync_mainnet = "${ZKSYNC_MAINNET_RPC_URL}"
 
 [profile.default.invariant]
-fail_on_revert = true
-runs = 256
+fail_on_revert = false
+runs = 2000
+depth = 23

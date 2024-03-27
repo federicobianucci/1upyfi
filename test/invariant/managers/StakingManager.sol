@@ -14,8 +14,33 @@ contract StakingManager is CommonBase, StdCheats, StdUtils {
         handlers = _handlers;
     }
 
-    function deposit(uint256 handlerIndex, uint256 amount) public {
-        uint256 index = bound(handlerIndex, 0, handlers.length - 1);
+    function warp(uint256 amount) external {
+        amount = bound(amount, 1, 1 days);
+        vm.warp(block.timestamp + amount);
+    }
+
+    function deposit(uint256 index, uint256 amount) public {
+        index = bound(index, 0, handlers.length - 1);
         handlers[index].deposit(amount);
+    }
+
+    function donation(uint256 index, uint256 amount) public {
+        index = bound(index, 0, handlers.length - 1);
+        handlers[index].donation(amount);
+    }
+
+    function lock(uint256 index, uint256 duration) public {
+        index = bound(index, 0, handlers.length - 1);
+        handlers[index].lock(duration);
+    }
+
+    function unstake(uint256 index, uint256 amount) public {
+        index = bound(index, 0, handlers.length - 1);
+        handlers[index].unstake(amount);
+    }
+
+    function withdraw(uint256 index, uint256 amount) public {
+        index = bound(index, 0, handlers.length - 1);
+        handlers[index].withdraw(amount);
     }
 }

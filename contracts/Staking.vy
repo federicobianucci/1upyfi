@@ -101,7 +101,7 @@ def transfer(_to: address, _value: uint256) -> bool:
     @param _value Amount of tokens to transfer
     @return Always True
     """
-    assert _to != empty(address) and _to != self
+    assert _to != empty(address) and _to != self, "line 104"
 
     if _value > 0:
         self._update_balance(_value, msg.sender, DECREMENT)
@@ -119,7 +119,7 @@ def transferFrom(_from: address, _to: address, _value: uint256) -> bool:
     @param _value Amount of tokens to transfer
     @return Always True
     """
-    assert _to != empty(address) and _to != self
+    assert _to != empty(address) and _to != self, "line 122"
     
     if _value > 0:
         allowance: uint256 = self.allowance[_from][msg.sender] - _value
@@ -139,7 +139,7 @@ def approve(_spender: address, _value: uint256) -> bool:
     @param _value Amount of tokens spender is allowed to spend
     @return Always True
     """
-    assert _spender != empty(address)
+    assert _spender != empty(address), "line 142"
 
     self.allowance[msg.sender][_spender] = _value
     log Approval(msg.sender, _spender, _value)
@@ -328,7 +328,7 @@ def lock(_duration: uint256 = max_value(uint256)) -> uint256:
         self.previous_packed_balances[msg.sender] = self.packed_balances[msg.sender]
 
     new_duration: uint256 = min(_duration, RAMP_LENGTH) # min of duration and 8 weeks
-    assert new_duration > old_duration or balance == 0
+    assert new_duration > old_duration or balance == 0, "line 331"
     
     # calculate new timestamp
     if balance > 0:
@@ -351,7 +351,7 @@ def unstake(_assets: uint256):
     @param _assets Amount of assets to unstake
     @dev Adds existing stream to new stream, if applicable
     """
-    assert _assets > 0
+    assert _assets > 0, "line 354"
     self.totalSupply -= _assets
     self._update_balance(_assets, msg.sender, DECREMENT)
 
@@ -405,8 +405,8 @@ def set_rewards(_rewards: address):
     @param _rewards Rewards contract
     @dev Can only be called by management
     """
-    assert msg.sender == self.management
-    assert _rewards != empty(address)
+    assert msg.sender == self.management, "line 408"
+    assert _rewards != empty(address), "line 409"
     self.rewards = Rewards(_rewards)
     log SetRewards(_rewards)
 
@@ -418,7 +418,7 @@ def set_management(_management: address):
         Needs to be accepted by that account separately to transfer management over
     @param _management New pending management address
     """
-    assert msg.sender == self.management
+    assert msg.sender == self.management, "line 421"
     self.pending_management = _management
     log PendingManagement(_management)
 
@@ -429,7 +429,7 @@ def accept_management():
         Accept management role.
         Can only be called by account previously marked as pending management by current management
     """
-    assert msg.sender == self.pending_management
+    assert msg.sender == self.pending_management, "line 432"
     self.pending_management = empty(address)
     self.management = msg.sender
     log SetManagement(msg.sender)
@@ -442,7 +442,7 @@ def _deposit(_assets: uint256, _receiver: address):
     self.totalSupply += _assets
     self._update_balance(_assets, _receiver, INCREMENT)
 
-    assert ERC20(asset).transferFrom(msg.sender, self, _assets, default_return_value=True)
+    assert ERC20(asset).transferFrom(msg.sender, self, _assets, default_return_value=True), "line 445"
     log Deposit(msg.sender, _receiver, _assets, _assets)
     log Transfer(empty(address), _receiver, _assets)
 
@@ -474,19 +474,19 @@ def _withdraw(_assets: uint256, _receiver: address, _owner: address):
     total: uint256 = 0
     claimed: uint256 = 0
     time, total, claimed = self._unpack(self.packed_streams[_owner])
-    assert time > 0
+    assert time > 0, "line 477"
 
     claimed += _assets
     claimable: uint256 = min(block.timestamp - time, WEEK_LENGTH)
     claimable = total * claimable / WEEK_LENGTH
-    assert claimed <= claimable
+    assert claimed <= claimable, "line 482"
 
     if claimed < total:
         self.packed_streams[_owner] = self._pack(time, total, claimed)
     else:
         self.packed_streams[_owner] = 0
 
-    assert ERC20(asset).transfer(_receiver, _assets, default_return_value=True)
+    assert ERC20(asset).transfer(_receiver, _assets, default_return_value=True), "line 489"
     log Withdraw(_owner, _receiver, _owner, _assets, _assets)
 
 @internal
@@ -516,7 +516,7 @@ def _update_balance(_amount: uint256, _account: address, _increment: bool):
         time = block.timestamp - (balance * time + _amount * lock_duration) / (balance + _amount) # @audit check this
         balance += _amount
     else:
-        assert lock_duration == 0
+        assert lock_duration == 0, "line 519"
         balance -= _amount
         if balance == 0:
             time = 0
@@ -533,7 +533,7 @@ def _pack(_a: uint256, _b: uint256, _c: uint256) -> uint256:
     """
     @notice Pack a small value and two big values into a single storage slot
     """
-    assert _a <= SMALL_MASK and _b <= BIG_MASK and _c <= BIG_MASK
+    assert _a <= SMALL_MASK and _b <= BIG_MASK and _c <= BIG_MASK, "line 536"
     return (_a << 224) | (_b << 112) | _c
 
 @internal

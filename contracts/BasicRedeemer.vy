@@ -148,14 +148,14 @@ def redeem(_account: address, _receiver: address, _lt_amount: uint256, _dt_amoun
     return minted
 
 @internal
-def _redeem_yearn(_receiver: address, _amount: uint256, _eth_amount: uint256): # @audit-ok receiver?
+def _redeem_yearn(_receiver: address, _amount: uint256, _eth_amount: uint256): # @audit-ok receiver? REPORTED
     """
     @notice Redeem through Yearn. Keep slippage excess
     """
     value: uint256 = self.yearn_redemption.eth_required(_amount)
     value -= value * 3 / 1000
     assert value > 0
-    assert _eth_amount >= value, "slippage" # @audit check this slippage check
+    assert _eth_amount >= value, "slippage" # @audit-ok check this slippage check
     self.yearn_redemption.redeem(_amount, value=value)
 
 @internal

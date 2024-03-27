@@ -10,13 +10,13 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract StakingHandler is CommonBase, StdCheats, StdUtils {
     IStaking private staking;
-    IERC20 private yfi;
+    IERC20 private upYfi;
 
     uint256 public stakedAmount;
 
-    constructor(IStaking _staking, IERC20 _yfi) {
+    constructor(IStaking _staking) {
         staking = _staking;
-        yfi = _yfi;
+        upYfi = IERC20(staking.asset());
     }
 
     function totalSupply() external view returns (uint256) {
@@ -24,30 +24,29 @@ contract StakingHandler is CommonBase, StdCheats, StdUtils {
     }
 
     function deposit(uint256 amount) external returns (uint256) {
-        bound(amount, 0, yfi.balanceOf(address(this)));
-        return staking.previewMint(amount);
+        vm.assume(amount != 0);
+        amount = bound(amount, 0, upYfi.balanceOf(address(this)));
+        return staking.deposit(amount);
     }
 
-    // function locked() external view returns (uint256) {
-    //     return vestingEscrow.locked();
-    // }
+    function donation(uint256 amount) external returns (bool) {
+        amount = bound(amount, 0, upYfi.balanceOf(address(this)));
+        return upYfi.transfer(address(staking), amount);
+    }
 
-    // function sum_unclaimed_claimed_locked() external view returns (uint256) {
-    //     return vestingEscrow.unclaimed() + vestingEscrow.total_claimed() + vestingEscrow.locked();
-    // }
+    function lock(uint256 duration) external returns (uint256) {
+        return staking.lock(duration);
+    }
 
-    // function claim() external returns (uint256) {
-    //     hoax(vestingEscrow.recipient());
-    //     return vestingEscrow.claim();
-    // }
+    function unstake(uint256 amount) external {
+        vm.assume(amount != 0);
+        amount = bound(amount, 0, staking.balanceOf(address(this)));
+        staking.unstake(amount);
+    }
 
-    // function claim(address _sender) external returns (uint256) {
-    //     if (vestingEscrow.open_claim()) {
-    //         hoax(_sender);
-    //         return vestingEscrow.claim(vestingEscrow.recipient());
-    //     } else {
-    //         hoax(vestingEscrow.recipient());
-    //         return vestingEscrow.claim();
-    //     }
-    // }
+    function withdraw(uint256 amount) external returns (uint256) {
+        vm.assume(amount != 0);
+        amount = bound(amount, 0, staking.maxWithdraw(address(this)));
+        return staking.withdraw(amount);
+    }
 }
