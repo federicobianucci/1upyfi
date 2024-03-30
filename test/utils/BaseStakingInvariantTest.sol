@@ -45,7 +45,7 @@ abstract contract BaseStakingInvariantTest is Test {
         //---------- 1up contracts ----------//
 
         // proxy
-        proxy = IProxy(deployContract("Proxy", abi.encode(address(yfi), address(dYfi))));
+        proxy = IProxy(deployContract("Proxy", abi.encode(address(yearnVotingEscrow))));
 
         // registry
         registry = IRegistry(deployContract("Registry", abi.encode(address(proxy))));
@@ -66,7 +66,7 @@ abstract contract BaseStakingInvariantTest is Test {
                         address(yfi),
                         address(dYfi),
                         address(proxy),
-                        address(gaugeRewards),
+                        address(0xdeadbeef), // gauge rewards
                         address(stakingRewards)
                     )
                 )

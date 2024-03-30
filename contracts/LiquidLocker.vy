@@ -64,6 +64,7 @@ def deposit(_amount: uint256, _receiver: address = msg.sender):
     @param _amount Amount of tokens to add to the lock
     @param _receiver Receiver of newly minted liquid locker tokens
     """
+    assert totalSupply > 0 or _amount >= 1e18
     self._mint(_amount * SCALE, _receiver)
     assert token.transferFrom(msg.sender, proxy.address, _amount, default_return_value=True)
     proxy.modify_lock(_amount, block.timestamp + LOCK_TIME)
@@ -95,7 +96,7 @@ def extend_lock():
     """
     @notice Extend the duration of the protocol's ve lock
     """
-    proxy.modify_lock(0, block.timestamp + LOCK_TIME) # @audit need to be operator
+    proxy.modify_lock(0, block.timestamp + LOCK_TIME)
 
 @external
 def transfer(_to: address, _value: uint256) -> bool:

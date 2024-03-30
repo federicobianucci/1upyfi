@@ -332,7 +332,7 @@ def _deposit(_assets: uint256, _receiver: address):
     """
     assert _assets > 0
     pending: uint256 = self._pending()
-    rewards.report(asset, empty(address), _receiver, _assets, pending) # @audit-ok call to rewards contract
+    rewards.report(asset, empty(address), _receiver, _assets, pending)
     assert ERC20(asset).transferFrom(msg.sender, proxy, _assets, default_return_value=True)
     log Deposit(msg.sender, _receiver, _assets, _assets)
     log Transfer(empty(address), _receiver, _assets)

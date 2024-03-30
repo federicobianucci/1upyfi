@@ -19,7 +19,7 @@ import {ILiquidLocker} from "test/interfaces/ILiquidLocker.sol";
 import {IGauge} from "test/interfaces/IGauge.sol";
 import {IFactory} from "test/interfaces/IFactory.sol";
 
-abstract contract BaseForkTest is Test {
+abstract contract BaseFuzzTest is Test {
     VyperDeployer vyperDeployer;
 
     // yearn
@@ -33,6 +33,8 @@ abstract contract BaseForkTest is Test {
     IYearnGauge public yearnGauge5;
 
     // 1up
+    IERC20 public upYfi;
+    IERC20 public supYfi;
     IFactory public factory;
     IProxy public proxy;
     IStaking public staking;
@@ -46,6 +48,12 @@ abstract contract BaseForkTest is Test {
     IGauge public gauge3;
     IGauge public gauge4;
     IGauge public gauge5;
+
+    // actors
+    address public alice = address(0x10000);
+    address public bob = address(0x20000);
+    address public carol = address(0x30000);
+    address public attacker = address(0x40000);
 
     function setUp() public virtual {
         vyperDeployer = new VyperDeployer();
@@ -66,7 +74,12 @@ abstract contract BaseForkTest is Test {
         //---------- 1up contracts ----------//
 
         // proxy
-        proxy = IProxy(deployContract("Proxy", abi.encode(address(yfi), address(dYfi))));
+        proxy = IProxy(deployContract("Proxy", abi.encode(address(yearnVotingEscrow))));
+        vm.prank(address(vyperDeployer));
+        proxy.set_operator(address(this), true);
+        bytes memory data =
+            abi.encodeWithSignature("approve(address,uint256)", address(yearnVotingEscrow), type(uint256).max);
+        proxy.call(address(yfi), data);
 
         // registry
         registry = IRegistry(deployContract("Registry", abi.encode(address(proxy))));
@@ -75,6 +88,9 @@ abstract contract BaseForkTest is Test {
         liquidLocker = ILiquidLocker(
             deployContract("LiquidLocker", abi.encode(address(yfi), address(yearnVotingEscrow), address(proxy)))
         );
+        upYfi = IERC20(address(liquidLocker));
+        vm.prank(address(vyperDeployer));
+        proxy.set_operator(address(liquidLocker), true);
 
         // basic redeemer
         basicRedeemer = IBasicRedeemer(
@@ -96,6 +112,7 @@ abstract contract BaseForkTest is Test {
 
         // staking
         staking = IStaking(deployContract("Staking", abi.encode(address(liquidLocker))));
+        supYfi = IERC20(address(staking));
 
         // staking rewards
         stakingRewards = IStakingRewards(
@@ -111,6 +128,7 @@ abstract contract BaseForkTest is Test {
         vm.prank(address(vyperDeployer));
         gaugeRewards.set_redeemer(address(basicRedeemer));
 
+        // TODO: yearnRegistry
         // factory
         // factory = IFactory(
         //     deployContract(
@@ -171,9 +189,10 @@ abstract contract BaseForkTest is Test {
         vm.label(address(gauge4), "Gauge4");
         vm.label(address(gauge5), "Gauge5");
 
-        vm.label(address(0x10000), "Alice");
-        vm.label(address(0x20000), "Bob");
-        vm.label(address(0x30000), "Deployer");
+        vm.label(address(alice), "Alice");
+        vm.label(address(bob), "Bob");
+        vm.label(address(carol), "Carol");
+        vm.label(address(attacker), "Attacker");
     }
 
     function deployContract(string memory contractName, bytes memory args) public returns (address) {

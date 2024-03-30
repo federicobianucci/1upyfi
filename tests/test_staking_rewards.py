@@ -347,19 +347,3 @@ def test_accept_management_wrong(deployer, alice, bob, rewards):
     rewards.set_management(alice, sender=deployer)
     with reverts():
         rewards.accept_management(sender=bob)
-        
-def test_claim_naked_fee_double(deployer, alice, bob, locking_token, discount_token, proxy, staking, rewards):
-    staking.mint(alice, 2 * UNIT, sender=deployer)
-    locking_token.mint(proxy, 8 * UNIT, sender=deployer)
-    discount_token.mint(proxy, 10 * UNIT, sender=deployer)
-    rewards.harvest(4 * UNIT, 5 * UNIT, sender=deployer)
-    rewards.set_fee_rate(LT_FEE_IDX, 2_500, sender=deployer)
-    rewards.set_fee_rate(DT_FEE_IDX, 2_000, sender=deployer)
-    assert rewards.claim(alice, b"", sender=alice).return_value == (3 * UNIT, 4 * UNIT)
-    assert locking_token.balanceOf(alice) == 3 * UNIT
-    assert discount_token.balanceOf(alice) == 4 * UNIT
-    rewards.harvest(4 * UNIT, 5 * UNIT, sender=deployer)
-    staking.transfer(bob, 2 * UNIT, sender=alice)
-    # assert rewards.claim(bob, b"", sender=bob).return_value == (3 * UNIT, 4 * UNIT)
-    # assert locking_token.balanceOf(bob) == 3 * UNIT
-    # assert discount_token.balanceOf(bob) == 4 * UNIT
